@@ -9,28 +9,38 @@ const theme = Mantine.createTheme({
   primaryColor: "orange",
   primaryShade: 8,
   defaultRadius: "md",
-  black: "#212121",
+  black: Mantine.DEFAULT_THEME.colors.dark[4],
   headings: {
     fontWeight: "600",
   },
+  fontSizes: {
+    sm: Mantine.rem(16),
+  },
   components: {
+    Badge: Mantine.Badge.extend({
+      defaultProps: {
+        size: "lg",
+      },
+    }),
     NumberInput: Mantine.NumberInput.extend({
       defaultProps: {
         hideControls: true,
       },
     }),
-    TableTh: Mantine.Table.Th.extend({
-      defaultProps: {
-        fw: 600,
-      },
-    }),
     Modal: Mantine.Modal.extend({
       defaultProps: {
         centered: true,
-        classNames: {
-          content: "app-modal-content",
-        },
       },
+      styles: (theme) => ({
+        header: {
+          borderBottom: `1px solid ${theme.colors.gray[3]}`,
+          marginBottom: theme.spacing.sm,
+        },
+        title: {
+          fontWeight: theme.headings.fontWeight,
+          fontSize: theme.headings.sizes.h3.fontSize,
+        },
+      }),
     }),
     Menu: Mantine.Menu.extend({
       defaultProps: {
@@ -44,7 +54,6 @@ const theme = Mantine.createTheme({
     }),
     Paper: Mantine.Paper.extend({
       defaultProps: {
-        p: Mantine.rem(20),
         shadow: "sm",
         withBorder: true,
       },
