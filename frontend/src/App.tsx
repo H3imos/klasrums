@@ -5,6 +5,7 @@ import router from "./app/router";
 import theme from "./config/theme";
 
 import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
 
 function App() {
   return (

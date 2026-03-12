@@ -14,6 +14,7 @@ const theme = Mantine.createTheme({
     fontWeight: "600",
   },
   fontSizes: {
+    xs: Mantine.rem(14),
     sm: Mantine.rem(16),
   },
   components: {
@@ -69,6 +70,11 @@ const theme = Mantine.createTheme({
         limit: 10,
         checkIconPosition: "right",
         rightSection: createElement(ChevronDown),
+      },
+    }),
+    TableTh: Mantine.Table.Th.extend({
+      defaultProps: {
+       fw: 600,
       },
     }),
   },
