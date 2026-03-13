@@ -10,6 +10,8 @@ const formatDate = (value: Date | string | null): string =>
 
 type CreatePeriodProps = {
   opened: boolean;
+  mode?: "create" | "edit";
+  initialValues?: CreatePeriodFormPayload;
   onClose: () => void;
   onSave?: (payload: CreatePeriodFormPayload) => Promise<void> | void;
   isSaving?: boolean;
@@ -18,15 +20,21 @@ type CreatePeriodProps = {
 
 export default function CreatePeriod({
   opened,
+  mode = "create",
+  initialValues,
   onClose,
   onSave,
   isSaving = false,
   errorMessage,
 }: CreatePeriodProps) {
   const formRef = useRef<HTMLFormElement>(null);
-  const [name, setName] = useState("");
-  const [dateStart, setDateStart] = useState<Date | string | null>(null);
-  const [dateEnd, setDateEnd] = useState<Date | string | null>(null);
+  const [name, setName] = useState(initialValues?.name ?? "");
+  const [dateStart, setDateStart] = useState<Date | string | null>(
+    initialValues?.startDate ?? null,
+  );
+  const [dateEnd, setDateEnd] = useState<Date | string | null>(
+    initialValues?.finishDate ?? null,
+  );
   const [localError, setLocalError] = useState<string | null>(null);
 
   const resetForm = () => {
@@ -50,7 +58,7 @@ export default function CreatePeriod({
     const payload: CreatePeriodFormPayload = {
       name: name.trim(),
       startDate: formatDate(dateStart),
-      finishDate: formatDate(dateEnd)
+      finishDate: formatDate(dateEnd),
     };
 
     if (!payload.name || !payload.startDate || !payload.finishDate) {
@@ -71,7 +79,7 @@ export default function CreatePeriod({
     <Mantine.Modal
       opened={opened}
       onClose={handleClose}
-      title="Crear periodo"
+      title={mode === "edit" ? "Editar periodo" : "Crear periodo"}
       size="lg"
       centered
       closeOnClickOutside={false}

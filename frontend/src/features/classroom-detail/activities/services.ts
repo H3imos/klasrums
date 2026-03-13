@@ -2,7 +2,9 @@ import type {
   ActivityApiDto,
   CreateActivityPayload,
   CreatePeriodPayload,
-  PeriodApiDto
+  PeriodApiDto,
+  UpdatePeriodPayload,
+  UpdateActivityPayload,
 } from "./types";
 
 const API_BASE_URL =
@@ -21,14 +23,14 @@ const parseErrorMessage = async (response: Response): Promise<string> => {
 
 const requestJson = async <T>(
   path: string,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<T> => {
   const response = await fetch(buildUrl(path), {
     ...options,
     headers: {
       "Content-Type": "application/json",
-      ...(options?.headers ?? {})
-    }
+      ...(options?.headers ?? {}),
+    },
   });
 
   if (!response.ok) {
@@ -38,13 +40,16 @@ const requestJson = async <T>(
   return (await response.json()) as T;
 };
 
-const requestVoid = async (path: string, options?: RequestInit): Promise<void> => {
+const requestVoid = async (
+  path: string,
+  options?: RequestInit,
+): Promise<void> => {
   const response = await fetch(buildUrl(path), {
     ...options,
     headers: {
       "Content-Type": "application/json",
-      ...(options?.headers ?? {})
-    }
+      ...(options?.headers ?? {}),
+    },
   });
 
   if (!response.ok) {
@@ -53,37 +58,68 @@ const requestVoid = async (path: string, options?: RequestInit): Promise<void> =
 };
 
 export const listPeriods = async (
-  classroomId: string
+  classroomId: string,
 ): Promise<PeriodApiDto[]> =>
   requestJson<PeriodApiDto[]>(`/classrooms/${classroomId}/periods`);
 
 export const createPeriod = async (
   classroomId: string,
-  payload: CreatePeriodPayload
+  payload: CreatePeriodPayload,
 ): Promise<PeriodApiDto> =>
   requestJson<PeriodApiDto>(`/classrooms/${classroomId}/periods`, {
     method: "POST",
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   });
 
 export const deletePeriod = async (
   classroomId: string,
-  periodId: string
+  periodId: string,
 ): Promise<void> =>
   requestVoid(`/classrooms/${classroomId}/periods/${periodId}`, {
-    method: "DELETE"
+    method: "DELETE",
+  });
+
+export const updatePeriod = async (
+  classroomId: string,
+  periodId: string,
+  payload: UpdatePeriodPayload,
+): Promise<PeriodApiDto> =>
+  requestJson<PeriodApiDto>(`/classrooms/${classroomId}/periods/${periodId}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
   });
 
 export const listActivities = async (
-  classroomId: string
+  classroomId: string,
 ): Promise<ActivityApiDto[]> =>
   requestJson<ActivityApiDto[]>(`/classrooms/${classroomId}/activities`);
 
 export const createActivity = async (
   classroomId: string,
-  payload: CreateActivityPayload
+  payload: CreateActivityPayload,
 ): Promise<ActivityApiDto> =>
   requestJson<ActivityApiDto>(`/classrooms/${classroomId}/activities`, {
     method: "POST",
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   });
+
+export const deleteActivity = async (
+  classroomId: string,
+  activityId: string,
+): Promise<void> =>
+  requestVoid(`/classrooms/${classroomId}/activities/${activityId}`, {
+    method: "DELETE",
+  });
+
+export const updateActivity = async (
+  classroomId: string,
+  activityId: string,
+  payload: UpdateActivityPayload,
+): Promise<ActivityApiDto> =>
+  requestJson<ActivityApiDto>(
+    `/classrooms/${classroomId}/activities/${activityId}`,
+    {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    },
+  );

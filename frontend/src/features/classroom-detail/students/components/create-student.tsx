@@ -16,7 +16,7 @@ export default function CreateStudent({
   onClose,
   onSave,
   isSaving = false,
-  errorMessage
+  errorMessage,
 }: CreateStudentProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [fullName, setFullName] = useState("");
@@ -42,7 +42,7 @@ export default function CreateStudent({
 
     const payload: CreateStudentFormPayload = {
       fullName: fullName.trim(),
-      email: email.trim()
+      email: email.trim(),
     };
 
     if (!payload.fullName || !payload.email) {

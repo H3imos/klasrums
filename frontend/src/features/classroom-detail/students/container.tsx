@@ -13,6 +13,17 @@ export default function StudentsContainer() {
 
   const [createStudentOpened, setCreateStudentOpened] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+
+  const normalizedSearch = search.trim().toLowerCase();
+  const filteredStudents = (studentsQuery.data ?? []).filter((student) => {
+    if (!normalizedSearch) return true;
+
+    return (
+      student.fullName.toLowerCase().includes(normalizedSearch) ||
+      student.email.toLowerCase().includes(normalizedSearch)
+    );
+  });
 
   const handleCreateStudent = async (payload: CreateStudentFormPayload) => {
     if (!classroomId) return;
@@ -34,8 +45,9 @@ export default function StudentsContainer() {
 
   const renderView = () => (
     <StudentsView
-      students={studentsQuery.data ?? []}
+      students={filteredStudents}
       isLoading={studentsQuery.isLoading}
+      search={search}
       errorMessage={
         studentsQuery.error?.message ?? deleteStudentMutation.error?.message
       }
@@ -45,6 +57,7 @@ export default function StudentsContainer() {
       deletingStudentId={deletingId}
       onOpenCreateModal={() => setCreateStudentOpened(true)}
       onCloseCreateModal={() => setCreateStudentOpened(false)}
+      onSearchChange={setSearch}
       onCreateStudent={handleCreateStudent}
       onDeleteStudent={handleDeleteStudent}
     />

@@ -9,12 +9,10 @@ export default function ClassroomsContainer() {
   const classroomsQuery = ClassroomsHooks.useClassrooms();
   const createClassroomMutation = ClassroomsHooks.useCreateClassroom();
 
-  const handleCreateClassroom = async (
-    payload: CreateClassroomFormPayload
-  ) => {
+  const handleCreateClassroom = async (payload: CreateClassroomFormPayload) => {
     await createClassroomMutation.mutateAsync({
       name: payload.className,
-      room: payload.classroom
+      room: payload.classroom,
     });
 
     setCreateClassroomOpened(false);

@@ -1,7 +1,9 @@
 import type {
-  ClassroomApiDto,
-  CreateClassroomPayload,
-  UpdateClassroomPayload,
+  ActivityApiDto,
+  PeriodApiDto,
+  SaveScorePayload,
+  ScoreApiDto,
+  StudentApiDto,
 } from "./types";
 
 const API_BASE_URL =
@@ -54,25 +56,29 @@ const requestVoid = async (
   }
 };
 
-export const listClassrooms = async (): Promise<ClassroomApiDto[]> =>
-  requestJson<ClassroomApiDto[]>("/classrooms");
+export const listPeriods = async (
+  classroomId: string,
+): Promise<PeriodApiDto[]> =>
+  requestJson<PeriodApiDto[]>(`/classrooms/${classroomId}/periods`);
 
-export const createClassroom = async (
-  payload: CreateClassroomPayload,
-): Promise<ClassroomApiDto> =>
-  requestJson<ClassroomApiDto>("/classrooms", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+export const listActivities = async (
+  classroomId: string,
+): Promise<ActivityApiDto[]> =>
+  requestJson<ActivityApiDto[]>(`/classrooms/${classroomId}/activities`);
 
-export const updateClassroom = async (
-  id: string,
-  payload: UpdateClassroomPayload,
-): Promise<ClassroomApiDto> =>
-  requestJson<ClassroomApiDto>(`/classrooms/${id}`, {
+export const listStudents = async (
+  classroomId: string,
+): Promise<StudentApiDto[]> =>
+  requestJson<StudentApiDto[]>(`/classrooms/${classroomId}/students`);
+
+export const listScores = async (classroomId: string): Promise<ScoreApiDto[]> =>
+  requestJson<ScoreApiDto[]>(`/classrooms/${classroomId}/scores`);
+
+export const saveScore = async (
+  classroomId: string,
+  payload: SaveScorePayload,
+): Promise<void> =>
+  requestVoid(`/classrooms/${classroomId}/scores`, {
     method: "PUT",
     body: JSON.stringify(payload),
   });
-
-export const deleteClassroom = async (id: string): Promise<void> =>
-  requestVoid(`/classrooms/${id}`, { method: "DELETE" });

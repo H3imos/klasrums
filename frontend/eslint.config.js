@@ -21,6 +21,7 @@ export default defineConfig([
     },
     rules: {
       "@typescript-eslint/no-invalid-void-type": "off",
+      "@typescript-eslint/no-dynamic-delete": "off"
     },
   },
 ]);

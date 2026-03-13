@@ -21,6 +21,7 @@ const theme = Mantine.createTheme({
     Badge: Mantine.Badge.extend({
       defaultProps: {
         size: "lg",
+        radius: "sm",
       },
     }),
     NumberInput: Mantine.NumberInput.extend({
@@ -74,7 +75,7 @@ const theme = Mantine.createTheme({
     }),
     TableTh: Mantine.Table.Th.extend({
       defaultProps: {
-       fw: 600,
+        fw: 600,
       },
     }),
   },

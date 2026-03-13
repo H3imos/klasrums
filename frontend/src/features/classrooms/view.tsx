@@ -27,7 +27,7 @@ export default function ClassroomsView({
   createModalOpened,
   onOpenCreateModal,
   onCloseCreateModal,
-  onCreateClassroom
+  onCreateClassroom,
 }: ClassroomsViewProps) {
   const renderClassroom = (classroom: Classroom, index: number) => (
     <Mantine.Paper key={classroom.id} shadow="sm" p="lg">
@@ -117,7 +117,7 @@ export default function ClassroomsView({
         ) : (
           <Mantine.SimpleGrid cols={2} mt="md">
             {classrooms.map((classroom, index) =>
-              renderClassroom(classroom, index)
+              renderClassroom(classroom, index),
             )}
           </Mantine.SimpleGrid>
         )}

@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router";
 import routes from "../constants/routes";
 
 import Layout from "../common/layout/Layout";
+import LandingContainer from "../features/landing/container";
 import SignInContainer from "../features/sign-in/container";
 import ClassroomsContainer from "../features/classrooms/container";
 import ClassroomDetailContainer from "../features/classroom-detail/container";
@@ -12,6 +13,10 @@ import StudentsContainer from "../features/classroom-detail/students/container";
 import AttendancesContainer from "../features/classroom-detail/attendances/container";
 
 const router = createBrowserRouter([
+  {
+    path: routes.ROOT,
+    Component: LandingContainer,
+  },
   {
     path: routes.SIGN_IN,
     Component: SignInContainer,

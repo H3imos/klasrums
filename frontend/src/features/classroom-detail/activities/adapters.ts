@@ -25,7 +25,6 @@ export const toActivityModel = (payload: ActivityApiDto): Activity => {
     name: safeString(payload?.label, "Actividad sin nombre"),
     weight: safeNumber(payload?.weight),
     limitDate: safeString(payload?.limitDate),
-    status: "Abierta",
-    createdAt: safeString(payload?.createdAt)
+    createdAt: safeString(payload?.createdAt),
   };
 };

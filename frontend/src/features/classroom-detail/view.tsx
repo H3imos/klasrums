@@ -2,15 +2,43 @@ import * as Mantine from "@mantine/core";
 import { Fragment, useEffect } from "react";
 import {
   generatePath,
+  Link,
   Outlet,
   useLocation,
   useNavigate,
   useParams,
 } from "react-router";
 
+import CreateClassroom from "../classrooms/components/create-classroom";
+import type { CreateClassroomFormPayload } from "../classrooms/types";
 import routes from "../../constants/routes";
+import { ChevronDown, ChevronLeft, Pencil, Trash2 } from "lucide-react";
 
-export default function ClassroomDetailView() {
+type ClassroomDetailViewProps = {
+  classroomName: string;
+  classroomRoom: string;
+  editModalOpened: boolean;
+  isEditing: boolean;
+  isDeleting: boolean;
+  errorMessage?: string;
+  onOpenEditModal: () => void;
+  onCloseEditModal: () => void;
+  onEditClassroom: (payload: CreateClassroomFormPayload) => void;
+  onDeleteClassroom: () => void;
+};
+
+export default function ClassroomDetailView({
+  classroomName,
+  classroomRoom,
+  editModalOpened,
+  isEditing,
+  isDeleting,
+  errorMessage,
+  onOpenEditModal,
+  onCloseEditModal,
+  onEditClassroom,
+  onDeleteClassroom,
+}: ClassroomDetailViewProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { classroomId = "" } = useParams();
@@ -52,11 +80,74 @@ export default function ClassroomDetailView() {
     return (
       <Fragment>
         <Mantine.Group justify="space-between" align="center">
-          <Mantine.Box>
-            <Mantine.Title order={2}>Clase de Matematicas</Mantine.Title>
-          </Mantine.Box>
-          <Mantine.Button variant="light">Configuracion</Mantine.Button>
+          <Mantine.Group gap="xs">
+            <Mantine.ActionIcon
+              variant="subtle"
+              size="lg"
+              component={Link}
+              to={routes.CLASSROOMS}
+            >
+              <ChevronLeft style={{ width: 24, height: 24 }} />
+            </Mantine.ActionIcon>
+            <Mantine.Title order={2}>{classroomName}</Mantine.Title>
+          </Mantine.Group>
+
+          <Mantine.Menu
+            shadow="md"
+            width={180}
+            position="bottom-end"
+            withinPortal
+          >
+            <Mantine.Menu.Target>
+              <Mantine.Button
+                variant="light"
+                rightSection={<ChevronDown />}
+                data-testid="classroom-detail-settings-button"
+              >
+                Configuración
+              </Mantine.Button>
+            </Mantine.Menu.Target>
+
+            <Mantine.Menu.Dropdown>
+              <Mantine.Menu.Item
+                leftSection={<Pencil size={14} />}
+                onClick={onOpenEditModal}
+                data-testid="classroom-detail-edit-button"
+              >
+                Editar curso
+              </Mantine.Menu.Item>
+              <Mantine.Menu.Item
+                color="red"
+                leftSection={<Trash2 size={14} />}
+                onClick={onDeleteClassroom}
+                disabled={isDeleting}
+                data-testid="classroom-detail-delete-button"
+              >
+                Eliminar curso
+              </Mantine.Menu.Item>
+            </Mantine.Menu.Dropdown>
+          </Mantine.Menu>
         </Mantine.Group>
+
+        {errorMessage ? (
+          <Mantine.Alert color="red" mt="md" variant="light">
+            {errorMessage}
+          </Mantine.Alert>
+        ) : null}
+
+        <CreateClassroom
+          key={classroomName}
+          opened={editModalOpened}
+          mode="edit"
+          initialValues={{
+            className: classroomName,
+            classroom: classroomRoom,
+          }}
+          onClose={onCloseEditModal}
+          onSave={onEditClassroom}
+          isSaving={isEditing}
+          errorMessage={errorMessage}
+        />
 
         <Mantine.Tabs value={activeTab} onChange={handleTabChange} mt="lg">
           <Mantine.Tabs.List>

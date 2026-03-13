@@ -9,5 +9,5 @@ export const toStudentModel = (payload: StudentApiDto): Student => ({
   fullName: safeString(payload?.fullName, "Estudiante sin nombre"),
   email: safeString(payload?.email),
   createdAt: safeString(payload?.createdAt),
-  updatedAt: safeString(payload?.updatedAt)
+  updatedAt: safeString(payload?.updatedAt),
 });

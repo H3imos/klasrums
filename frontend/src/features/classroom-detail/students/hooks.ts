@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { notifications } from "@mantine/notifications";
 
 import * as StudentsAdapters from "./adapters";
 import * as StudentsServices from "./services";
@@ -28,10 +29,16 @@ export const useCreateStudent = (classroomId: string) => {
       );
       return StudentsAdapters.toStudentModel(created);
     },
-    onSuccess: () =>
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: studentsQueryKey(classroomId),
-      }),
+      });
+      notifications.show({
+        title: "Estudiante creado",
+        message: "El estudiante ha sido creado exitosamente",
+        color: "green",
+      });
+    },
   });
 };
 
@@ -41,9 +48,15 @@ export const useDeleteStudent = (classroomId: string) => {
   return useMutation<void, Error, string>({
     mutationFn: (studentId) =>
       StudentsServices.deleteStudent(classroomId, studentId),
-    onSuccess: () =>
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: studentsQueryKey(classroomId),
-      }),
+      });
+      notifications.show({
+        title: "Estudiante eliminado",
+        message: "El estudiante ha sido eliminado exitosamente",
+        color: "green",
+      });
+    },
   });
 };

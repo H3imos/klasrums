@@ -17,6 +17,9 @@ export type ClassroomApiDto = {
   name?: string;
   room?: string;
   status?: ClassroomStatus;
+  studentsCount?: number;
+  periodsCount?: number;
+  activitiesCount?: number;
   createdAt?: string;
   updatedAt?: string;
 };

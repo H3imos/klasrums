@@ -1,12 +1,9 @@
-export type ActivityStatus = "Abierta" | "Cerrada";
-
 export type Activity = {
   id: string;
   periodId: string;
   name: string;
   weight: number;
   limitDate: string;
-  status: ActivityStatus;
   createdAt?: string;
 };
 
@@ -43,11 +40,24 @@ export type CreatePeriodPayload = {
   finishDate: string;
 };
 
+export type UpdatePeriodPayload = {
+  label?: string;
+  startDate?: string;
+  finishDate?: string;
+};
+
 export type CreateActivityPayload = {
   periodId: string;
   label: string;
   weight: number;
   limitDate: string;
+};
+
+export type UpdateActivityPayload = {
+  periodId?: string;
+  label?: string;
+  weight?: number;
+  limitDate?: string;
 };
 
 export type CreatePeriodFormPayload = {

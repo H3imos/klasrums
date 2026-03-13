@@ -5,6 +5,8 @@ import type { CreateClassroomFormPayload } from "../types";
 
 type CreateClassroomProps = {
   opened: boolean;
+  mode?: "create" | "edit";
+  initialValues?: CreateClassroomFormPayload;
   onClose: () => void;
   onSave?: (payload: CreateClassroomFormPayload) => Promise<void> | void;
   isSaving?: boolean;
@@ -13,6 +15,8 @@ type CreateClassroomProps = {
 
 export default function CreateClassroom({
   opened,
+  mode = "create",
+  initialValues,
   onClose,
   onSave,
   isSaving = false,
@@ -60,7 +64,7 @@ export default function CreateClassroom({
     <Mantine.Modal
       opened={opened}
       onClose={handleClose}
-      title="Crear clase"
+      title={mode === "edit" ? "Editar clase" : "Crear clase"}
       size="lg"
       centered
       closeOnClickOutside={false}
@@ -77,6 +81,7 @@ export default function CreateClassroom({
             name="className"
             label="Nombre de la clase"
             placeholder="Ej. Matemáticas 7A"
+            defaultValue={initialValues?.className ?? ""}
             withAsterisk
             required
             data-testid="classrooms-name-input"
@@ -86,6 +91,7 @@ export default function CreateClassroom({
             name="classroom"
             label="Salón"
             placeholder="Ej. 101"
+            defaultValue={initialValues?.classroom ?? ""}
             withAsterisk
             required
             data-testid="classrooms-room-input"

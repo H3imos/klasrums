@@ -8,6 +8,8 @@ import type { CreateActivityFormPayload } from "../types";
 type CreateActivityProps = {
   opened: boolean;
   periodName: string;
+  mode?: "create" | "edit";
+  initialValues?: CreateActivityFormPayload;
   onClose: () => void;
   onSave?: (payload: CreateActivityFormPayload) => Promise<void> | void;
   isSaving?: boolean;
@@ -17,15 +19,21 @@ type CreateActivityProps = {
 export default function CreateActivity({
   opened,
   periodName,
+  mode = "create",
+  initialValues,
   onClose,
   onSave,
   isSaving = false,
   errorMessage,
 }: CreateActivityProps) {
   const formRef = useRef<HTMLFormElement>(null);
-  const [name, setName] = useState("");
-  const [weightPercent, setWeightPercent] = useState<number | "">("");
-  const [limitDate, setLimitDate] = useState<Date | string | null>(null);
+  const [name, setName] = useState(initialValues?.name ?? "");
+  const [weightPercent, setWeightPercent] = useState<number | "">(
+    initialValues?.weightPercent ?? "",
+  );
+  const [limitDate, setLimitDate] = useState<Date | string | null>(
+    initialValues?.limitDate ?? null,
+  );
   const [localError, setLocalError] = useState<string | null>(null);
 
   const resetForm = () => {
@@ -49,7 +57,7 @@ export default function CreateActivity({
     const payload: CreateActivityFormPayload = {
       name: name.trim(),
       weightPercent: typeof weightPercent === "number" ? weightPercent : -1,
-      limitDate: limitDate ? dayjs(limitDate).format("YYYY-MM-DD") : ""
+      limitDate: limitDate ? dayjs(limitDate).format("YYYY-MM-DD") : "",
     };
 
     if (!payload.name || payload.weightPercent < 0 || !payload.limitDate) {
@@ -70,7 +78,7 @@ export default function CreateActivity({
     <Mantine.Modal
       opened={opened}
       onClose={handleClose}
-      title="Crear actividad"
+      title={mode === "edit" ? "Editar actividad" : "Crear actividad"}
       size="lg"
       centered
       closeOnClickOutside={false}
@@ -104,10 +112,12 @@ export default function CreateActivity({
 
           <Mantine.NumberInput
             name="weightPercent"
-            label="Ponderacion (%)"
+            label="Ponderación (%)"
             placeholder="Ej. 25"
             min={0}
             max={100}
+            clampBehavior="strict"
+            suffix="%"
             step={1}
             withAsterisk
             required

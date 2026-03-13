@@ -3,6 +3,11 @@ import type { Classroom, ClassroomApiDto, ClassroomStatus } from "./types";
 const safeString = (value: unknown, fallback = ""): string =>
   typeof value === "string" ? value : fallback;
 
+const safeNumber = (value: unknown, fallback = 0): number => {
+  const parsed = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
 const safeStatus = (value: unknown): ClassroomStatus =>
   value === "archived" ? "archived" : "active";
 
@@ -13,7 +18,7 @@ export const toClassroomModel = (payload: ClassroomApiDto): Classroom => ({
   status: safeStatus(payload?.status),
   createdAt: safeString(payload?.createdAt),
   updatedAt: safeString(payload?.updatedAt),
-  studentsCount: 0,
-  periodsCount: 0,
-  activitiesCount: 0
+  studentsCount: safeNumber(payload?.studentsCount),
+  periodsCount: safeNumber(payload?.periodsCount),
+  activitiesCount: safeNumber(payload?.activitiesCount),
 });
