@@ -5,7 +5,7 @@ export type Activity = {
   periodId: string;
   name: string;
   weight: number;
-  dueDate: string;
+  limitDate: string;
   status: ActivityStatus;
   createdAt?: string;
 };
@@ -13,17 +13,17 @@ export type Activity = {
 export type Period = {
   id: string;
   name: string;
-  dateStart: string;
-  dateEnd: string;
+  startDate: string;
+  finishDate: string;
   activities: Activity[];
-  position?: number;
 };
 
 export type PeriodApiDto = {
   id?: string;
   classroomId?: string;
   label?: string;
-  position?: number;
+  startDate?: string;
+  finishDate?: string;
   createdAt?: string;
 };
 
@@ -33,28 +33,31 @@ export type ActivityApiDto = {
   periodId?: string;
   label?: string;
   weight?: number;
+  limitDate?: string;
   createdAt?: string;
 };
 
 export type CreatePeriodPayload = {
   label: string;
-  position: number;
+  startDate: string;
+  finishDate: string;
 };
 
 export type CreateActivityPayload = {
   periodId: string;
   label: string;
   weight: number;
+  limitDate: string;
 };
 
 export type CreatePeriodFormPayload = {
   name: string;
-  dateStart: string;
-  dateEnd: string;
-  position?: number;
+  startDate: string;
+  finishDate: string;
 };
 
 export type CreateActivityFormPayload = {
   name: string;
   weightPercent: number;
+  limitDate: string;
 };

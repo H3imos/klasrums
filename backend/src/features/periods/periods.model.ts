@@ -2,6 +2,7 @@ export interface PeriodModel {
   id: string;
   classroomId: string;
   label: string;
-  position: number;
+  startDate: string;
+  finishDate: string;
   createdAt: string;
 }

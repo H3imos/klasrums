@@ -10,3 +10,8 @@ html {
 .focus-cell:focus-within {
   outline: 2px solid var(--mantine-primary-color-filled) !important;
 }
+
+.lucide {
+  width: rem(20px);
+  height: rem(20px);
+}

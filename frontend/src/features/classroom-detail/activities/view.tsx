@@ -2,7 +2,7 @@ import * as Mantine from "@mantine/core";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import es from "dayjs/locale/es";
-import { Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 
 import { Fragment } from "react";
 
@@ -69,13 +69,13 @@ export default function ActivitiesView({
   onDeletePeriod,
 }: ActivitiesViewProps) {
   const activePeriod = periodsLookup.find(
-    (period) => period.id === createActivityPeriodId
+    (period) => period.id === createActivityPeriodId,
   );
 
   const renderActivitiesTable = (
     periodId: string,
     activities: Activity[],
-    periodIndex: number
+    periodIndex: number,
   ) => {
     return (
       <Mantine.Table striped highlightOnHover>
@@ -88,19 +88,6 @@ export default function ActivitiesView({
           </Mantine.Table.Tr>
         </Mantine.Table.Thead>
         <Mantine.Table.Tbody>
-          <Mantine.Table.Tr data-testid={`activities-create-row-${periodIndex}`}>
-            <Mantine.Table.Td colSpan={4}>
-              <Mantine.Center>
-                <Mantine.Button
-                  variant="light"
-                  onClick={() => onOpenCreateActivity(periodId)}
-                  data-testid={`activities-create-activity-${periodIndex}-button`}
-                >
-                  Crear actividad
-                </Mantine.Button>
-              </Mantine.Center>
-            </Mantine.Table.Td>
-          </Mantine.Table.Tr>
           {activities.map((activity, index) => (
             <Mantine.Table.Tr
               key={activity.id}
@@ -111,8 +98,8 @@ export default function ActivitiesView({
                 {(activity.weight * 100).toFixed(0)}%
               </Mantine.Table.Td>
               <Mantine.Table.Td>
-                {activity.dueDate
-                  ? dayjs(activity.dueDate).format("LL")
+                {activity.limitDate
+                  ? dayjs(activity.limitDate).format("LL")
                   : "Sin fecha"}
               </Mantine.Table.Td>
               <Mantine.Table.Td>
@@ -125,6 +112,22 @@ export default function ActivitiesView({
               </Mantine.Table.Td>
             </Mantine.Table.Tr>
           ))}
+          <Mantine.Table.Tr
+            data-testid={`activities-create-row-${periodIndex}`}
+          >
+            <Mantine.Table.Td colSpan={4}>
+              <Mantine.Center>
+                <Mantine.Button
+                  variant="transparent"
+                  onClick={() => onOpenCreateActivity(periodId)}
+                  data-testid={`activities-create-activity-${periodIndex}-button`}
+                  rightSection={<Plus />}
+                >
+                  Crear actividad
+                </Mantine.Button>
+              </Mantine.Center>
+            </Mantine.Table.Td>
+          </Mantine.Table.Tr>
         </Mantine.Table.Tbody>
       </Mantine.Table>
     );
@@ -203,8 +206,8 @@ export default function ActivitiesView({
                 <Mantine.Group align="center">
                   <Mantine.Title order={4}>{period.name}</Mantine.Title>
                   <Mantine.Text c="dimmed">
-                    {period.dateStart && period.dateEnd
-                      ? `${dayjs(period.dateStart).format("LL")} - ${dayjs(period.dateEnd).format("LL")}`
+                    {period.startDate && period.finishDate
+                      ? `${dayjs(period.startDate).format("LL")} - ${dayjs(period.finishDate).format("LL")}`
                       : "Sin fechas"}
                   </Mantine.Text>
                   <Mantine.Text c="dimmed">

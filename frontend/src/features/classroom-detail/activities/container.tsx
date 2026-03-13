@@ -83,7 +83,8 @@ export default function ActivitiesContainer() {
 
     const requestPayload: CreatePeriodPayload = {
       label: payload.name,
-      position: payload.position ?? 0
+      startDate: payload.startDate,
+      finishDate: payload.finishDate
     };
 
     await createPeriodMutation.mutateAsync(requestPayload);
@@ -115,7 +116,8 @@ export default function ActivitiesContainer() {
     const requestPayload: CreateActivityPayload = {
       periodId: createActivityPeriodId,
       label: payload.name,
-      weight: payload.weightPercent / 100
+      weight: payload.weightPercent / 100,
+      limitDate: payload.limitDate
     };
 
     await createActivityMutation.mutateAsync(requestPayload);

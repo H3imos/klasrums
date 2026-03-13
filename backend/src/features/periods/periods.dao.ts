@@ -8,14 +8,16 @@ export interface PeriodsDao {
     id: string;
     classroomId: string;
     label: string;
-    position: number;
+    startDate: string;
+    finishDate: string;
   }): Promise<PeriodModel>;
   update(
     classroomId: string,
     id: string,
     payload: {
       label?: string;
-      position?: number;
+      startDate?: string;
+      finishDate?: string;
     },
   ): Promise<PeriodModel | null>;
   delete(classroomId: string, id: string): Promise<boolean>;
@@ -25,7 +27,8 @@ type PeriodRow = {
   id: string;
   classroom_id: string;
   label: string;
-  position: number;
+  start_date: Date;
+  finish_date: Date;
   created_at: Date;
 };
 
@@ -34,7 +37,7 @@ class MysqlPeriodsDao implements PeriodsDao {
 
   async listByClassroom(classroomId: string): Promise<PeriodModel[]> {
     const [rows] = await this.db.query<PeriodRow[]>(
-      "SELECT id, classroom_id, label, position, created_at FROM classroom_periods WHERE classroom_id = ? ORDER BY position ASC, created_at ASC",
+      "SELECT id, classroom_id, label, start_date, finish_date, created_at FROM classroom_periods WHERE classroom_id = ? ORDER BY start_date ASC, finish_date ASC, created_at ASC",
       [classroomId],
     );
 
@@ -45,13 +48,14 @@ class MysqlPeriodsDao implements PeriodsDao {
     id: string;
     classroomId: string;
     label: string;
-    position: number;
+    startDate: string;
+    finishDate: string;
   }): Promise<PeriodModel> {
-    const { id, classroomId, label, position } = payload;
+    const { id, classroomId, label, startDate, finishDate } = payload;
 
     await this.db.execute(
-      "INSERT INTO classroom_periods (id, classroom_id, label, position) VALUES (?, ?, ?, ?)",
-      [id, classroomId, label, position],
+      "INSERT INTO classroom_periods (id, classroom_id, label, start_date, finish_date) VALUES (?, ?, ?, ?, ?)",
+      [id, classroomId, label, startDate, finishDate],
     );
 
     const created = await this.findById(classroomId, id);
@@ -68,7 +72,8 @@ class MysqlPeriodsDao implements PeriodsDao {
     id: string,
     payload: {
       label?: string;
-      position?: number;
+      startDate?: string;
+      finishDate?: string;
     },
   ): Promise<PeriodModel | null> {
     const fields: string[] = [];
@@ -79,9 +84,14 @@ class MysqlPeriodsDao implements PeriodsDao {
       values.push(payload.label);
     }
 
-    if (payload.position !== undefined) {
-      fields.push("position = ?");
-      values.push(payload.position);
+    if (payload.startDate !== undefined) {
+      fields.push("start_date = ?");
+      values.push(payload.startDate);
+    }
+
+    if (payload.finishDate !== undefined) {
+      fields.push("finish_date = ?");
+      values.push(payload.finishDate);
     }
 
     if (fields.length === 0) {
@@ -112,7 +122,7 @@ class MysqlPeriodsDao implements PeriodsDao {
     id: string,
   ): Promise<PeriodModel | null> {
     const [rows] = await this.db.query<PeriodRow[]>(
-      "SELECT id, classroom_id, label, position, created_at FROM classroom_periods WHERE classroom_id = ? AND id = ? LIMIT 1",
+      "SELECT id, classroom_id, label, start_date, finish_date, created_at FROM classroom_periods WHERE classroom_id = ? AND id = ? LIMIT 1",
       [classroomId, id],
     );
 
@@ -126,7 +136,8 @@ class MysqlPeriodsDao implements PeriodsDao {
       id: row.id,
       classroomId: row.classroom_id,
       label: row.label,
-      position: row.position,
+      startDate: row.start_date.toISOString().slice(0, 10),
+      finishDate: row.finish_date.toISOString().slice(0, 10),
       createdAt: row.created_at.toISOString(),
     };
   }

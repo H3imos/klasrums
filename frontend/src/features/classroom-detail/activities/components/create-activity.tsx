@@ -1,4 +1,6 @@
 import * as Mantine from "@mantine/core";
+import { DateInput } from "@mantine/dates";
+import dayjs from "dayjs";
 import { useRef, useState, type SubmitEvent } from "react";
 
 import type { CreateActivityFormPayload } from "../types";
@@ -23,12 +25,14 @@ export default function CreateActivity({
   const formRef = useRef<HTMLFormElement>(null);
   const [name, setName] = useState("");
   const [weightPercent, setWeightPercent] = useState<number | "">("");
+  const [limitDate, setLimitDate] = useState<Date | string | null>(null);
   const [localError, setLocalError] = useState<string | null>(null);
 
   const resetForm = () => {
     formRef.current?.reset();
     setName("");
     setWeightPercent("");
+    setLimitDate(null);
   };
 
   const handleClose = () => {
@@ -45,9 +49,10 @@ export default function CreateActivity({
     const payload: CreateActivityFormPayload = {
       name: name.trim(),
       weightPercent: typeof weightPercent === "number" ? weightPercent : -1,
+      limitDate: limitDate ? dayjs(limitDate).format("YYYY-MM-DD") : ""
     };
 
-    if (!payload.name || payload.weightPercent < 0) {
+    if (!payload.name || payload.weightPercent < 0 || !payload.limitDate) {
       return;
     }
 
@@ -115,6 +120,19 @@ export default function CreateActivity({
               }
 
               setWeightPercent("");
+            }}
+          />
+
+          <DateInput
+            name="limitDate"
+            label="Fecha limite"
+            placeholder="Selecciona una fecha"
+            withAsterisk
+            required
+            data-testid="activities-activity-limit-input"
+            value={limitDate}
+            onChange={(value) => {
+              setLimitDate(value);
             }}
           />
 

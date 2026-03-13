@@ -2,21 +2,12 @@ import type { NextFunction, Request, Response } from "express";
 
 import { toClassroomDto } from "./classrooms.mapper";
 import { AppError } from "../../errors/app-error";
+import { parseStatus, parseString } from "../../helpers/parsers";
 import type {
   CreateClassroomRequestDto,
   UpdateClassroomRequestDto,
 } from "./classrooms.dto";
 import type { ClassroomsService } from "./classrooms.service";
-
-const parseString = (value: unknown): string => {
-  if (typeof value !== "string") return "";
-  return value.trim();
-};
-
-const parseStatus = (value: unknown): "active" | "archived" | undefined => {
-  if (value === "active" || value === "archived") return value;
-  return undefined;
-};
 
 export class ClassroomsController {
   constructor(private readonly classroomsService: ClassroomsService) {}

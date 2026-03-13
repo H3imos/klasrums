@@ -9,7 +9,7 @@ const bootstrap = async (): Promise<void> => {
     port: env.dbPort,
     user: env.dbUser,
     password: env.dbPassword,
-    database: env.dbName
+    database: env.dbName,
   });
 
   const app = createApp({ db, corsOrigin: env.corsOrigin });

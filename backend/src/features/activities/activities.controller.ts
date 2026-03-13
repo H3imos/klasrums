@@ -1,22 +1,19 @@
 import type { NextFunction, Request, Response } from "express";
 
 import { AppError } from "../../errors/app-error";
+import {
+  parseDateString,
+  parseNumber,
+  parseString,
+} from "../../helpers/parsers";
+
+import { toActivityDto } from "./activities.mapper";
+
 import type {
   CreateActivityRequestDto,
-  UpdateActivityRequestDto
+  UpdateActivityRequestDto,
 } from "./activities.dto";
-import { toActivityDto } from "./activities.mapper";
 import type { ActivitiesService } from "./activities.service";
-
-const parseString = (value: unknown): string => {
-  if (typeof value !== "string") return "";
-  return value.trim();
-};
-
-const parseNumber = (value: unknown): number | null => {
-  const parsed = typeof value === "number" ? value : Number(value);
-  return Number.isFinite(parsed) ? parsed : null;
-};
 
 const isValidWeight = (value: number) => value >= 0 && value <= 1;
 
@@ -51,11 +48,20 @@ export class ActivitiesController {
       const payload: CreateActivityRequestDto = {
         periodId: parseString(req.body?.periodId),
         label: parseString(req.body?.label),
-        weight: weight ?? -1
+        weight: weight ?? -1,
+        limitDate: parseDateString(req.body?.limitDate),
       };
 
-      if (!payload.periodId || !payload.label || payload.weight < 0) {
-        throw new AppError(400, "periodId, label and weight are required");
+      if (
+        !payload.periodId ||
+        !payload.label ||
+        payload.weight < 0 ||
+        !payload.limitDate
+      ) {
+        throw new AppError(
+          400,
+          "periodId, label, weight and limitDate are required",
+        );
       }
 
       if (!isValidWeight(payload.weight)) {
@@ -64,7 +70,7 @@ export class ActivitiesController {
 
       const activity = await this.activitiesService.create({
         classroomId,
-        ...payload
+        ...payload,
       });
 
       res.status(201).json(toActivityDto(activity));
@@ -88,7 +94,8 @@ export class ActivitiesController {
       const payload: UpdateActivityRequestDto = {
         periodId: parseString(req.body?.periodId) || undefined,
         label: parseString(req.body?.label) || undefined,
-        weight: weight ?? undefined
+        weight: weight ?? undefined,
+        limitDate: parseDateString(req.body?.limitDate) || undefined,
       };
 
       if (req.body?.weight !== undefined && payload.weight === undefined) {
@@ -99,14 +106,19 @@ export class ActivitiesController {
         throw new AppError(400, "weight must be between 0 and 1");
       }
 
-      if (!payload.periodId && !payload.label && payload.weight === undefined) {
+      if (
+        !payload.periodId &&
+        !payload.label &&
+        payload.weight === undefined &&
+        !payload.limitDate
+      ) {
         throw new AppError(400, "At least one field is required");
       }
 
       const activity = await this.activitiesService.update(
         classroomId,
         id,
-        payload
+        payload,
       );
 
       res.status(200).json(toActivityDto(activity));
@@ -133,5 +145,5 @@ export class ActivitiesController {
 }
 
 export const buildActivitiesController = (
-  activitiesService: ActivitiesService
+  activitiesService: ActivitiesService,
 ): ActivitiesController => new ActivitiesController(activitiesService);

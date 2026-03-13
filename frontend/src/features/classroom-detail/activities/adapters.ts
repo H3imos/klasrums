@@ -9,28 +9,23 @@ const safeNumber = (value: unknown, fallback = 0): number => {
 };
 
 export const toPeriodModel = (payload: PeriodApiDto): Period => {
-  const createdAt = safeString(payload?.createdAt);
-
   return {
     id: safeString(payload?.id),
     name: safeString(payload?.label, "Periodo sin nombre"),
-    dateStart: createdAt,
-    dateEnd: createdAt,
+    startDate: safeString(payload?.startDate),
+    finishDate: safeString(payload?.finishDate),
     activities: [],
-    position: payload?.position !== undefined ? safeNumber(payload.position) : undefined
   };
 };
 
 export const toActivityModel = (payload: ActivityApiDto): Activity => {
-  const createdAt = safeString(payload?.createdAt);
-
   return {
     id: safeString(payload?.id),
     periodId: safeString(payload?.periodId),
     name: safeString(payload?.label, "Actividad sin nombre"),
     weight: safeNumber(payload?.weight),
-    dueDate: createdAt,
+    limitDate: safeString(payload?.limitDate),
     status: "Abierta",
-    createdAt
+    createdAt: safeString(payload?.createdAt)
   };
 };

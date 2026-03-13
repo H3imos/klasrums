@@ -10,6 +10,7 @@ export interface ActivitiesDao {
     periodId: string;
     label: string;
     weight: number;
+    limitDate: string;
   }): Promise<ActivityModel>;
   update(
     classroomId: string,
@@ -18,6 +19,7 @@ export interface ActivitiesDao {
       periodId?: string;
       label?: string;
       weight?: number;
+      limitDate?: string;
     }
   ): Promise<ActivityModel | null>;
   delete(classroomId: string, id: string): Promise<boolean>;
@@ -30,6 +32,7 @@ type ActivityRow = {
   period_id: string;
   label: string;
   weight: number;
+  limit_date: Date;
   created_at: Date;
 };
 
@@ -38,7 +41,7 @@ class MysqlActivitiesDao implements ActivitiesDao {
 
   async listByClassroom(classroomId: string): Promise<ActivityModel[]> {
     const [rows] = await this.db.query<ActivityRow[]>(
-      "SELECT id, classroom_id, period_id, label, weight, created_at FROM classroom_activities WHERE classroom_id = ? ORDER BY created_at ASC",
+      "SELECT id, classroom_id, period_id, label, weight, limit_date, created_at FROM classroom_activities WHERE classroom_id = ? ORDER BY limit_date ASC, created_at ASC",
       [classroomId]
     );
 
@@ -51,12 +54,13 @@ class MysqlActivitiesDao implements ActivitiesDao {
     periodId: string;
     label: string;
     weight: number;
+    limitDate: string;
   }): Promise<ActivityModel> {
-    const { id, classroomId, periodId, label, weight } = payload;
+    const { id, classroomId, periodId, label, weight, limitDate } = payload;
 
     await this.db.execute(
-      "INSERT INTO classroom_activities (id, classroom_id, period_id, label, weight) VALUES (?, ?, ?, ?, ?)",
-      [id, classroomId, periodId, label, weight]
+      "INSERT INTO classroom_activities (id, classroom_id, period_id, label, weight, limit_date) VALUES (?, ?, ?, ?, ?, ?)",
+      [id, classroomId, periodId, label, weight, limitDate]
     );
 
     const created = await this.findById(classroomId, id);
@@ -75,6 +79,7 @@ class MysqlActivitiesDao implements ActivitiesDao {
       periodId?: string;
       label?: string;
       weight?: number;
+      limitDate?: string;
     }
   ): Promise<ActivityModel | null> {
     const fields: string[] = [];
@@ -93,6 +98,11 @@ class MysqlActivitiesDao implements ActivitiesDao {
     if (payload.weight !== undefined) {
       fields.push("weight = ?");
       values.push(payload.weight);
+    }
+
+    if (payload.limitDate !== undefined) {
+      fields.push("limit_date = ?");
+      values.push(payload.limitDate);
     }
 
     if (fields.length === 0) {
@@ -132,7 +142,7 @@ class MysqlActivitiesDao implements ActivitiesDao {
     id: string
   ): Promise<ActivityModel | null> {
     const [rows] = await this.db.query<ActivityRow[]>(
-      "SELECT id, classroom_id, period_id, label, weight, created_at FROM classroom_activities WHERE classroom_id = ? AND id = ? LIMIT 1",
+      "SELECT id, classroom_id, period_id, label, weight, limit_date, created_at FROM classroom_activities WHERE classroom_id = ? AND id = ? LIMIT 1",
       [classroomId, id]
     );
 
@@ -148,6 +158,7 @@ class MysqlActivitiesDao implements ActivitiesDao {
       periodId: row.period_id,
       label: row.label,
       weight: row.weight,
+      limitDate: row.limit_date.toISOString().slice(0, 10),
       createdAt: row.created_at.toISOString()
     };
   }

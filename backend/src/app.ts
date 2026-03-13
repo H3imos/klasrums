@@ -19,8 +19,8 @@ export const createApp = ({ db, corsOrigin }: AppDependencies): Application => {
   app.use(
     cors({
       origin: corsOrigin ?? "http://localhost:5173",
-      credentials: true
-    })
+      credentials: true,
+    }),
   );
   app.use(express.json());
   app.use("/api", buildClassroomsRouter(db));

@@ -1,17 +1,13 @@
 import type { NextFunction, Request, Response } from "express";
 
 import { AppError } from "../../errors/app-error";
+import { parseString } from "../../helpers/parsers";
 import type {
   CreateStudentRequestDto,
   UpdateStudentRequestDto
 } from "./students.dto";
 import { toStudentDto } from "./students.mapper";
 import type { StudentsService } from "./students.service";
-
-const parseString = (value: unknown): string => {
-  if (typeof value !== "string") return "";
-  return value.trim();
-};
 
 export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}

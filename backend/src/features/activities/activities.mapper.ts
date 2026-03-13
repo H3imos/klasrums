@@ -7,5 +7,6 @@ export const toActivityDto = (model: ActivityModel): ActivityResponseDto => ({
   periodId: model.periodId,
   label: model.label,
   weight: model.weight,
+  limitDate: model.limitDate,
   createdAt: model.createdAt
 });

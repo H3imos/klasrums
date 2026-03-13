@@ -27,7 +27,6 @@ export default function CreatePeriod({
   const [name, setName] = useState("");
   const [dateStart, setDateStart] = useState<Date | string | null>(null);
   const [dateEnd, setDateEnd] = useState<Date | string | null>(null);
-  const [position, setPosition] = useState<number | "">("");
   const [localError, setLocalError] = useState<string | null>(null);
 
   const resetForm = () => {
@@ -35,7 +34,6 @@ export default function CreatePeriod({
     setName("");
     setDateStart(null);
     setDateEnd(null);
-    setPosition("");
   };
 
   const handleClose = () => {
@@ -51,12 +49,11 @@ export default function CreatePeriod({
 
     const payload: CreatePeriodFormPayload = {
       name: name.trim(),
-      dateStart: formatDate(dateStart),
-      dateEnd: formatDate(dateEnd),
-      position: typeof position === "number" ? position : undefined,
+      startDate: formatDate(dateStart),
+      finishDate: formatDate(dateEnd)
     };
 
-    if (!payload.name || !payload.dateStart || !payload.dateEnd) {
+    if (!payload.name || !payload.startDate || !payload.finishDate) {
       return;
     }
 
@@ -121,23 +118,6 @@ export default function CreatePeriod({
             value={dateEnd}
             onChange={(value) => {
               setDateEnd(value);
-            }}
-          />
-
-          <Mantine.NumberInput
-            name="position"
-            label="Posicion"
-            placeholder="Ej. 1"
-            min={1}
-            data-testid="activities-period-position-input"
-            value={position}
-            onChange={(value) => {
-              if (typeof value === "number") {
-                setPosition(value);
-                return;
-              }
-
-              setPosition("");
             }}
           />
 

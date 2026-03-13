@@ -14,13 +14,15 @@ export class PeriodsService {
   async create(payload: {
     classroomId: string;
     label: string;
-    position: number;
+    startDate: string;
+    finishDate: string;
   }): Promise<PeriodModel> {
     return this.periodsDao.create({
       id: randomUUID(),
       classroomId: payload.classroomId,
       label: payload.label,
-      position: payload.position
+      startDate: payload.startDate,
+      finishDate: payload.finishDate
     });
   }
 
@@ -29,7 +31,8 @@ export class PeriodsService {
     id: string,
     payload: {
       label?: string;
-      position?: number;
+      startDate?: string;
+      finishDate?: string;
     }
   ): Promise<PeriodModel> {
     const updated = await this.periodsDao.update(classroomId, id, payload);

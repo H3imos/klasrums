@@ -9,12 +9,12 @@ export interface DatabaseConfig {
 }
 
 export const createDbConnection = async (
-  config: DatabaseConfig
+  config: DatabaseConfig,
 ): Promise<Connection> =>
   mysql.createConnection({
     host: config.host,
     port: config.port,
     user: config.user,
     password: config.password,
-    database: config.database
+    database: config.database,
   });

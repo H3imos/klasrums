@@ -2,16 +2,19 @@ export interface PeriodResponseDto {
   id: string;
   classroomId: string;
   label: string;
-  position: number;
+  startDate: string;
+  finishDate: string;
   createdAt: string;
 }
 
 export interface CreatePeriodRequestDto {
   label: string;
-  position: number;
+  startDate: string;
+  finishDate: string;
 }
 
 export interface UpdatePeriodRequestDto {
   label?: string;
-  position?: number;
+  startDate?: string;
+  finishDate?: string;
 }

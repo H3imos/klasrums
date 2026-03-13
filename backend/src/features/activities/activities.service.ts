@@ -16,6 +16,7 @@ export class ActivitiesService {
     periodId: string;
     label: string;
     weight: number;
+    limitDate: string;
   }): Promise<ActivityModel> {
     const exists = await this.activitiesDao.periodExists(
       payload.classroomId,
@@ -31,7 +32,8 @@ export class ActivitiesService {
       classroomId: payload.classroomId,
       periodId: payload.periodId,
       label: payload.label,
-      weight: payload.weight
+      weight: payload.weight,
+      limitDate: payload.limitDate
     });
   }
 
@@ -42,6 +44,7 @@ export class ActivitiesService {
       periodId?: string;
       label?: string;
       weight?: number;
+      limitDate?: string;
     }
   ): Promise<ActivityModel> {
     if (payload.periodId) {
