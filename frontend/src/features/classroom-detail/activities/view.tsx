@@ -2,31 +2,81 @@ import * as Mantine from "@mantine/core";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import es from "dayjs/locale/es";
+import { Trash2 } from "lucide-react";
 
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 
-import { periodsMock, type Activity } from "./mock";
+import CreateActivity from "./components/create-activity";
+import CreatePeriod from "./components/create-period";
+import type {
+  Activity,
+  ActivityStatus,
+  CreateActivityFormPayload,
+  CreatePeriodFormPayload,
+  Period,
+} from "./types";
 
 dayjs.extend(localizedFormat);
 dayjs.locale(es);
 
-export default function ActivitiesView() {
-  const [query, setQuery] = useState("");
+type ActivitiesViewProps = {
+  periods: Period[];
+  query: string;
+  status: ActivityStatus | null;
+  isLoading: boolean;
+  isCreating: boolean;
+  isCreatingActivity: boolean;
+  deletingPeriodId?: string | null;
+  createActivityPeriodId?: string | null;
+  periodsLookup: Period[];
+  createPeriodOpened: boolean;
+  errorMessage?: string;
+  createErrorMessage?: string;
+  createActivityErrorMessage?: string;
+  onQueryChange: (value: string) => void;
+  onStatusChange: (value: ActivityStatus | null) => void;
+  onOpenCreatePeriod: () => void;
+  onCloseCreatePeriod: () => void;
+  onCreatePeriod: (payload: CreatePeriodFormPayload) => void;
+  onOpenCreateActivity: (periodId: string) => void;
+  onCloseCreateActivity: () => void;
+  onCreateActivity: (payload: CreateActivityFormPayload) => void;
+  onDeletePeriod: (periodId: string) => void;
+};
 
-  const normalizedQuery = query.trim().toLowerCase();
+export default function ActivitiesView({
+  periods,
+  query,
+  status,
+  isLoading,
+  isCreating,
+  isCreatingActivity,
+  deletingPeriodId,
+  createActivityPeriodId,
+  periodsLookup,
+  createPeriodOpened,
+  errorMessage,
+  createErrorMessage,
+  createActivityErrorMessage,
+  onQueryChange,
+  onStatusChange,
+  onOpenCreatePeriod,
+  onCloseCreatePeriod,
+  onCreatePeriod,
+  onOpenCreateActivity,
+  onCloseCreateActivity,
+  onCreateActivity,
+  onDeletePeriod,
+}: ActivitiesViewProps) {
+  const activePeriod = periodsLookup.find(
+    (period) => period.id === createActivityPeriodId
+  );
 
-  const filteredPeriods = !normalizedQuery
-    ? periodsMock
-    : periodsMock
-        .map((period) => ({
-          ...period,
-          activities: period.activities.filter((activity) =>
-            activity.name.toLowerCase().includes(normalizedQuery),
-          ),
-        }))
-        .filter((period) => period.activities.length > 0);
-
-  const renderActivitiesTable = (activities: Activity[]) => {
+  const renderActivitiesTable = (
+    periodId: string,
+    activities: Activity[],
+    periodIndex: number
+  ) => {
     return (
       <Mantine.Table striped highlightOnHover>
         <Mantine.Table.Thead>
@@ -38,11 +88,33 @@ export default function ActivitiesView() {
           </Mantine.Table.Tr>
         </Mantine.Table.Thead>
         <Mantine.Table.Tbody>
-          {activities.map((activity) => (
-            <Mantine.Table.Tr key={activity.id}>
+          <Mantine.Table.Tr data-testid={`activities-create-row-${periodIndex}`}>
+            <Mantine.Table.Td colSpan={4}>
+              <Mantine.Center>
+                <Mantine.Button
+                  variant="light"
+                  onClick={() => onOpenCreateActivity(periodId)}
+                  data-testid={`activities-create-activity-${periodIndex}-button`}
+                >
+                  Crear actividad
+                </Mantine.Button>
+              </Mantine.Center>
+            </Mantine.Table.Td>
+          </Mantine.Table.Tr>
+          {activities.map((activity, index) => (
+            <Mantine.Table.Tr
+              key={activity.id}
+              data-testid={`activities-row-${index}`}
+            >
               <Mantine.Table.Td>{activity.name}</Mantine.Table.Td>
-              <Mantine.Table.Td>{activity.weight}%</Mantine.Table.Td>
-              <Mantine.Table.Td>{activity.dueDate}</Mantine.Table.Td>
+              <Mantine.Table.Td>
+                {(activity.weight * 100).toFixed(0)}%
+              </Mantine.Table.Td>
+              <Mantine.Table.Td>
+                {activity.dueDate
+                  ? dayjs(activity.dueDate).format("LL")
+                  : "Sin fecha"}
+              </Mantine.Table.Td>
               <Mantine.Table.Td>
                 <Mantine.Badge
                   variant="dot"
@@ -72,31 +144,84 @@ export default function ActivitiesView() {
             variant="filled"
             placeholder="Buscar actividad..."
             value={query}
-            onChange={(event) => setQuery(event.currentTarget.value)}
+            onChange={(event) => onQueryChange(event.currentTarget.value)}
             flex={1}
+            data-testid="activities-search-input"
           />
-          <Mantine.Select placeholder="Seleccionar estado" />
-          <Mantine.Button>Crear periodo</Mantine.Button>
+          <Mantine.Select
+            placeholder="Seleccionar estado"
+            data-testid="activities-status-select"
+            data={["Abierta", "Cerrada"]}
+            value={status}
+            onChange={(value) =>
+              onStatusChange(value === null ? null : (value as ActivityStatus))
+            }
+          />
+          <Mantine.Button
+            onClick={onOpenCreatePeriod}
+            data-testid="activities-create-period-button"
+          >
+            Crear periodo
+          </Mantine.Button>
         </Mantine.Group>
 
-        {filteredPeriods.length === 0 ? (
+        {errorMessage ? (
+          <Mantine.Alert color="red" mt="md" variant="light">
+            {errorMessage}
+          </Mantine.Alert>
+        ) : null}
+
+        <CreatePeriod
+          opened={createPeriodOpened}
+          onClose={onCloseCreatePeriod}
+          onSave={onCreatePeriod}
+          isSaving={isCreating}
+          errorMessage={createErrorMessage}
+        />
+
+        <CreateActivity
+          opened={Boolean(createActivityPeriodId)}
+          periodName={activePeriod?.name ?? "Periodo"}
+          onClose={onCloseCreateActivity}
+          onSave={onCreateActivity}
+          isSaving={isCreatingActivity}
+          errorMessage={createActivityErrorMessage}
+        />
+
+        {isLoading ? (
+          <Mantine.Center mt="md">
+            <Mantine.Loader size="md" />
+          </Mantine.Center>
+        ) : periods.length === 0 ? (
           <Mantine.Alert color="gray" title="Sin resultados">
             No se encontraron actividades para la busqueda actual.
           </Mantine.Alert>
         ) : (
-          filteredPeriods.map((period) => (
+          periods.map((period, index) => (
             <Mantine.Paper key={period.id} withBorder p="md">
-              <Mantine.Group align="center" mb="sm">
-                <Mantine.Title order={4}>{period.name}</Mantine.Title>
-                <Mantine.Text c="dimmed">
-                  {dayjs(period.dateStart).format("LL")} -{" "}
-                  {dayjs(period.dateEnd).format("LL")}
-                </Mantine.Text>
-                <Mantine.Text c="dimmed">
-                  ({period.activities.length} actividades)
-                </Mantine.Text>
+              <Mantine.Group align="center" mb="sm" justify="space-between">
+                <Mantine.Group align="center">
+                  <Mantine.Title order={4}>{period.name}</Mantine.Title>
+                  <Mantine.Text c="dimmed">
+                    {period.dateStart && period.dateEnd
+                      ? `${dayjs(period.dateStart).format("LL")} - ${dayjs(period.dateEnd).format("LL")}`
+                      : "Sin fechas"}
+                  </Mantine.Text>
+                  <Mantine.Text c="dimmed">
+                    ({period.activities.length} actividades)
+                  </Mantine.Text>
+                </Mantine.Group>
+                <Mantine.ActionIcon
+                  color="red"
+                  variant="subtle"
+                  onClick={() => onDeletePeriod(period.id)}
+                  disabled={deletingPeriodId === period.id}
+                  data-testid={`activities-period-delete-${index}-button`}
+                >
+                  <Trash2 size={16} />
+                </Mantine.ActionIcon>
               </Mantine.Group>
-              {renderActivitiesTable(period.activities)}
+              {renderActivitiesTable(period.id, period.activities, index)}
             </Mantine.Paper>
           ))
         )}

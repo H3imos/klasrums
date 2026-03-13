@@ -7,7 +7,7 @@ export default function Layout() {
     <Fragment>
       <Mantine.Paper shadow="xs" py="xs" radius={0}>
         <Mantine.Container size="xl">
-          <Mantine.Title order={3}>Klasrums</Mantine.Title>
+          <Mantine.Title order={3}>profee.tools</Mantine.Title>
         </Mantine.Container>
       </Mantine.Paper>
       <Mantine.Container size="xl" mt="lg">

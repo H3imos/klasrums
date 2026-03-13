@@ -1,38 +1,43 @@
 import * as Mantine from "@mantine/core";
-import { useRef, type SubmitEvent } from "react";
+import { useRef, useState, type SubmitEvent } from "react";
 
-type CreateClassroomPayload = {
-  className: string;
-  classroom: string;
-};
+import type { CreateClassroomFormPayload } from "../types";
 
 type CreateClassroomProps = {
   opened: boolean;
   onClose: () => void;
-  onSave?: (payload: CreateClassroomPayload) => void;
+  onSave?: (payload: CreateClassroomFormPayload) => Promise<void> | void;
+  isSaving?: boolean;
+  errorMessage?: string;
 };
 
 export default function CreateClassroom({
   opened,
   onClose,
   onSave,
+  isSaving = false,
+  errorMessage,
 }: CreateClassroomProps) {
   const formRef = useRef<HTMLFormElement>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   const resetForm = () => {
     formRef.current?.reset();
   };
 
   const handleClose = () => {
+    if (isSaving) return;
     resetForm();
+    setLocalError(null);
     onClose();
   };
 
-  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setLocalError(null);
 
     const formData = new FormData(event.currentTarget);
-    const payload = {
+    const payload: CreateClassroomFormPayload = {
       className: String(formData.get("className") ?? "").trim(),
       classroom: String(formData.get("classroom") ?? "").trim(),
     };
@@ -41,8 +46,14 @@ export default function CreateClassroom({
       return;
     }
 
-    onSave?.(payload);
-    handleClose();
+    try {
+      await onSave?.(payload);
+      handleClose();
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "No fue posible guardar";
+      setLocalError(message);
+    }
   };
 
   return (
@@ -53,15 +64,22 @@ export default function CreateClassroom({
       size="lg"
       centered
       closeOnClickOutside={false}
+      closeOnEscape={!isSaving}
     >
       <form ref={formRef} onSubmit={handleSubmit}>
         <Mantine.Stack>
+          {errorMessage || localError ? (
+            <Mantine.Alert color="red" variant="light">
+              {errorMessage ?? localError}
+            </Mantine.Alert>
+          ) : null}
           <Mantine.TextInput
             name="className"
             label="Nombre de la clase"
             placeholder="Ej. Matemáticas 7A"
             withAsterisk
             required
+            data-testid="classrooms-name-input"
           />
 
           <Mantine.TextInput
@@ -70,6 +88,7 @@ export default function CreateClassroom({
             placeholder="Ej. 101"
             withAsterisk
             required
+            data-testid="classrooms-room-input"
           />
 
           <Mantine.Group justify="flex-end" mt="sm">
@@ -77,10 +96,18 @@ export default function CreateClassroom({
               type="button"
               variant="default"
               onClick={handleClose}
+              data-testid="classrooms-cancel-button"
+              disabled={isSaving}
             >
               Cancelar
             </Mantine.Button>
-            <Mantine.Button type="submit">Guardar</Mantine.Button>
+            <Mantine.Button
+              type="submit"
+              data-testid="classrooms-save-button"
+              loading={isSaving}
+            >
+              Guardar
+            </Mantine.Button>
           </Mantine.Group>
         </Mantine.Stack>
       </form>

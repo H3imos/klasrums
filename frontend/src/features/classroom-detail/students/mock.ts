@@ -1,10 +1,4 @@
-export type Student = {
-  id: string;
-  fullName: string;
-  email: string;
-};
-
-export const studentsMock: Student[] = [
+export const studentsMock = [
   {
     id: "st-1",
     fullName: "Ana Maria Gomez",

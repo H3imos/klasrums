@@ -1,18 +1,4 @@
-export type Activity = {
-  id: string;
-  name: string;
-  weight: number;
-  dueDate: string;
-  status: "Abierta" | "Cerrada";
-};
-
-export type Period = {
-  id: string;
-  name: string;
-  dateStart: string;
-  dateEnd: string;
-  activities: Activity[];
-};
+import type { Period } from "./types";
 
 export const periodsMock: Period[] = [
   {
