@@ -4,7 +4,7 @@ import { AppError } from "../../errors/app-error";
 import { parseString } from "../../helpers/parsers";
 import type {
   CreateStudentRequestDto,
-  UpdateStudentRequestDto
+  UpdateStudentRequestDto,
 } from "./students.dto";
 import { toStudentDto } from "./students.mapper";
 import type { StudentsService } from "./students.service";
@@ -37,7 +37,7 @@ export class StudentsController {
 
       const payload: CreateStudentRequestDto = {
         fullName: parseString(req.body?.fullName),
-        email: parseString(req.body?.email)
+        email: parseString(req.body?.email),
       };
 
       if (!payload.fullName || !payload.email) {
@@ -47,7 +47,7 @@ export class StudentsController {
       const student = await this.studentsService.create({
         classroomId,
         fullName: payload.fullName,
-        email: payload.email
+        email: payload.email,
       });
 
       res.status(201).json(toStudentDto(student));
@@ -67,14 +67,18 @@ export class StudentsController {
 
       const payload: UpdateStudentRequestDto = {
         fullName: parseString(req.body?.fullName) || undefined,
-        email: parseString(req.body?.email) || undefined
+        email: parseString(req.body?.email) || undefined,
       };
 
       if (!payload.fullName && !payload.email) {
         throw new AppError(400, "At least one field is required");
       }
 
-      const student = await this.studentsService.update(classroomId, id, payload);
+      const student = await this.studentsService.update(
+        classroomId,
+        id,
+        payload,
+      );
       res.status(200).json(toStudentDto(student));
     } catch (error) {
       next(error);
@@ -84,7 +88,7 @@ export class StudentsController {
   async removeFromClassroom(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     try {
       const classroomId = parseString(req.params?.classroomId);
@@ -103,5 +107,5 @@ export class StudentsController {
 }
 
 export const buildStudentsController = (
-  studentsService: StudentsService
+  studentsService: StudentsService,
 ): StudentsController => new StudentsController(studentsService);

@@ -20,7 +20,7 @@ export class ActivitiesService {
   }): Promise<ActivityModel> {
     const exists = await this.activitiesDao.periodExists(
       payload.classroomId,
-      payload.periodId
+      payload.periodId,
     );
 
     if (!exists) {
@@ -33,7 +33,7 @@ export class ActivitiesService {
       periodId: payload.periodId,
       label: payload.label,
       weight: payload.weight,
-      limitDate: payload.limitDate
+      limitDate: payload.limitDate,
     });
   }
 
@@ -45,12 +45,12 @@ export class ActivitiesService {
       label?: string;
       weight?: number;
       limitDate?: string;
-    }
+    },
   ): Promise<ActivityModel> {
     if (payload.periodId) {
       const exists = await this.activitiesDao.periodExists(
         classroomId,
-        payload.periodId
+        payload.periodId,
       );
 
       if (!exists) {
@@ -77,5 +77,5 @@ export class ActivitiesService {
 }
 
 export const buildActivitiesService = (
-  activitiesDao: ActivitiesDao
+  activitiesDao: ActivitiesDao,
 ): ActivitiesService => new ActivitiesService(activitiesDao);

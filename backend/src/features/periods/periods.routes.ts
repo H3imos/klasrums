@@ -12,19 +12,19 @@ export const buildPeriodsRouter = (db: Connection): Router => {
   const controller = buildPeriodsController(service);
 
   router.get("/classrooms/:classroomId/periods", (req, res, next) =>
-    controller.list(req, res, next)
+    controller.list(req, res, next),
   );
 
   router.post("/classrooms/:classroomId/periods", (req, res, next) =>
-    controller.create(req, res, next)
+    controller.create(req, res, next),
   );
 
   router.put("/classrooms/:classroomId/periods/:id", (req, res, next) =>
-    controller.update(req, res, next)
+    controller.update(req, res, next),
   );
 
   router.delete("/classrooms/:classroomId/periods/:id", (req, res, next) =>
-    controller.delete(req, res, next)
+    controller.delete(req, res, next),
   );
 
   return router;

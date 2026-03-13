@@ -20,7 +20,7 @@ export class StudentsService {
       id: randomUUID(),
       classroomId: payload.classroomId,
       fullName: payload.fullName,
-      email: payload.email
+      email: payload.email,
     });
   }
 
@@ -30,12 +30,12 @@ export class StudentsService {
     payload: {
       fullName?: string;
       email?: string;
-    }
+    },
   ): Promise<StudentModel> {
     const updated = await this.studentsDao.updateInClassroom(
       classroomId,
       id,
-      payload
+      payload,
     );
 
     if (!updated) {
@@ -55,5 +55,5 @@ export class StudentsService {
 }
 
 export const buildStudentsService = (
-  studentsDao: StudentsDao
+  studentsDao: StudentsDao,
 ): StudentsService => new StudentsService(studentsDao);

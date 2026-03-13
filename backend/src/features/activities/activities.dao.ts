@@ -20,7 +20,7 @@ export interface ActivitiesDao {
       label?: string;
       weight?: number;
       limitDate?: string;
-    }
+    },
   ): Promise<ActivityModel | null>;
   delete(classroomId: string, id: string): Promise<boolean>;
   periodExists(classroomId: string, periodId: string): Promise<boolean>;
@@ -40,12 +40,12 @@ class MysqlActivitiesDao implements ActivitiesDao {
   constructor(private readonly db: Connection) {}
 
   async listByClassroom(classroomId: string): Promise<ActivityModel[]> {
-    const [rows] = await this.db.query<ActivityRow[]>(
+    const [rows] = await this.db.query(
       "SELECT id, classroom_id, period_id, label, weight, limit_date, created_at FROM classroom_activities WHERE classroom_id = ? ORDER BY limit_date ASC, created_at ASC",
-      [classroomId]
+      [classroomId],
     );
 
-    return rows.map(this.toModel);
+    return (rows as ActivityRow[]).map(this.toModel);
   }
 
   async create(payload: {
@@ -60,7 +60,7 @@ class MysqlActivitiesDao implements ActivitiesDao {
 
     await this.db.execute(
       "INSERT INTO classroom_activities (id, classroom_id, period_id, label, weight, limit_date) VALUES (?, ?, ?, ?, ?, ?)",
-      [id, classroomId, periodId, label, weight, limitDate]
+      [id, classroomId, periodId, label, weight, limitDate],
     );
 
     const created = await this.findById(classroomId, id);
@@ -80,7 +80,7 @@ class MysqlActivitiesDao implements ActivitiesDao {
       label?: string;
       weight?: number;
       limitDate?: string;
-    }
+    },
   ): Promise<ActivityModel | null> {
     const fields: string[] = [];
     const values: Array<string | number> = [];
@@ -113,7 +113,7 @@ class MysqlActivitiesDao implements ActivitiesDao {
 
     await this.db.execute(
       `UPDATE classroom_activities SET ${fields.join(", ")} WHERE classroom_id = ? AND id = ?`,
-      values
+      values,
     );
 
     return this.findById(classroomId, id);
@@ -122,31 +122,31 @@ class MysqlActivitiesDao implements ActivitiesDao {
   async delete(classroomId: string, id: string): Promise<boolean> {
     const [result] = await this.db.execute<ResultSetHeader>(
       "DELETE FROM classroom_activities WHERE classroom_id = ? AND id = ?",
-      [classroomId, id]
+      [classroomId, id],
     );
 
     return result.affectedRows > 0;
   }
 
   async periodExists(classroomId: string, periodId: string): Promise<boolean> {
-    const [rows] = await this.db.query<Array<{ id: string }>>(
+    const [rows] = await this.db.query(
       "SELECT id FROM classroom_periods WHERE classroom_id = ? AND id = ? LIMIT 1",
-      [classroomId, periodId]
+      [classroomId, periodId],
     );
 
-    return rows.length > 0;
+    return (rows as Array<{ id: string }>).length > 0;
   }
 
   private async findById(
     classroomId: string,
-    id: string
+    id: string,
   ): Promise<ActivityModel | null> {
-    const [rows] = await this.db.query<ActivityRow[]>(
+    const [rows] = await this.db.query(
       "SELECT id, classroom_id, period_id, label, weight, limit_date, created_at FROM classroom_activities WHERE classroom_id = ? AND id = ? LIMIT 1",
-      [classroomId, id]
+      [classroomId, id],
     );
 
-    const row = rows[0];
+    const row = (rows as ActivityRow[])[0];
 
     return row ? this.toModel(row) : null;
   }
@@ -159,7 +159,7 @@ class MysqlActivitiesDao implements ActivitiesDao {
       label: row.label,
       weight: row.weight,
       limitDate: row.limit_date.toISOString().slice(0, 10),
-      createdAt: row.created_at.toISOString()
+      createdAt: row.created_at.toISOString(),
     };
   }
 }

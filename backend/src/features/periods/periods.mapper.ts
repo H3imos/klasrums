@@ -7,5 +7,5 @@ export const toPeriodDto = (model: PeriodModel): PeriodResponseDto => ({
   label: model.label,
   startDate: model.startDate,
   finishDate: model.finishDate,
-  createdAt: model.createdAt
+  createdAt: model.createdAt,
 });

@@ -8,6 +8,9 @@ export const toClassroomDto = (
   name: model.name,
   room: model.room,
   status: model.status,
+  studentsCount: model.studentsCount,
+  periodsCount: model.periodsCount,
+  activitiesCount: model.activitiesCount,
   createdAt: model.createdAt,
   updatedAt: model.updatedAt,
 });

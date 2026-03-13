@@ -14,7 +14,7 @@ export const parseDateString = (value: unknown): string => {
 };
 
 export const parseStatus = (
-  value: unknown
+  value: unknown,
 ): "active" | "archived" | undefined => {
   if (value === "active" || value === "archived") return value;
   return undefined;

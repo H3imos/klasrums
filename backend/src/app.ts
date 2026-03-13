@@ -5,6 +5,7 @@ import type { Connection } from "mysql2/promise";
 import { buildActivitiesRouter } from "./features/activities/activities.routes";
 import { buildClassroomsRouter } from "./features/classrooms/classrooms.routes";
 import { buildPeriodsRouter } from "./features/periods/periods.routes";
+import { buildScoresRouter } from "./features/scores/scores.routes";
 import { buildStudentsRouter } from "./features/students/students.routes";
 import { errorHandler } from "./middlewares/error-handler";
 
@@ -26,6 +27,7 @@ export const createApp = ({ db, corsOrigin }: AppDependencies): Application => {
   app.use("/api", buildClassroomsRouter(db));
   app.use("/api", buildPeriodsRouter(db));
   app.use("/api", buildActivitiesRouter(db));
+  app.use("/api", buildScoresRouter(db));
   app.use("/api", buildStudentsRouter(db));
 
   app.use(errorHandler);

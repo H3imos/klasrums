@@ -22,7 +22,7 @@ export class PeriodsService {
       classroomId: payload.classroomId,
       label: payload.label,
       startDate: payload.startDate,
-      finishDate: payload.finishDate
+      finishDate: payload.finishDate,
     });
   }
 
@@ -33,7 +33,7 @@ export class PeriodsService {
       label?: string;
       startDate?: string;
       finishDate?: string;
-    }
+    },
   ): Promise<PeriodModel> {
     const updated = await this.periodsDao.update(classroomId, id, payload);
 

@@ -7,5 +7,5 @@ export const toStudentDto = (model: StudentModel): StudentResponseDto => ({
   fullName: model.fullName,
   email: model.email,
   createdAt: model.createdAt,
-  updatedAt: model.updatedAt
+  updatedAt: model.updatedAt,
 });

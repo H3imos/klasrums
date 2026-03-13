@@ -4,7 +4,7 @@ import { AppError } from "../../errors/app-error";
 import { parseDateString, parseString } from "../../helpers/parsers";
 import type {
   CreatePeriodRequestDto,
-  UpdatePeriodRequestDto
+  UpdatePeriodRequestDto,
 } from "./periods.dto";
 import { toPeriodDto } from "./periods.mapper";
 import type { PeriodsService } from "./periods.service";
@@ -38,7 +38,7 @@ export class PeriodsController {
       const payload: CreatePeriodRequestDto = {
         label: parseString(req.body?.label),
         startDate: parseDateString(req.body?.startDate),
-        finishDate: parseDateString(req.body?.finishDate)
+        finishDate: parseDateString(req.body?.finishDate),
       };
 
       if (!payload.label || !payload.startDate || !payload.finishDate) {
@@ -47,7 +47,7 @@ export class PeriodsController {
 
       const period = await this.periodsService.create({
         classroomId,
-        ...payload
+        ...payload,
       });
 
       res.status(201).json(toPeriodDto(period));
@@ -68,18 +68,14 @@ export class PeriodsController {
       const payload: UpdatePeriodRequestDto = {
         label: parseString(req.body?.label) || undefined,
         startDate: parseDateString(req.body?.startDate) || undefined,
-        finishDate: parseDateString(req.body?.finishDate) || undefined
+        finishDate: parseDateString(req.body?.finishDate) || undefined,
       };
 
       if (!payload.label && !payload.startDate && !payload.finishDate) {
         throw new AppError(400, "At least one field is required");
       }
 
-      const period = await this.periodsService.update(
-        classroomId,
-        id,
-        payload
-      );
+      const period = await this.periodsService.update(classroomId, id, payload);
 
       res.status(200).json(toPeriodDto(period));
     } catch (error) {
@@ -105,5 +101,5 @@ export class PeriodsController {
 }
 
 export const buildPeriodsController = (
-  periodsService: PeriodsService
+  periodsService: PeriodsService,
 ): PeriodsController => new PeriodsController(periodsService);

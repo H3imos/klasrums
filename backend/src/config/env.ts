@@ -40,6 +40,6 @@ export const loadEnv = (): EnvConfig => {
     dbPort,
     dbUser: process.env.MYSQL_USER,
     dbPassword: process.env.MYSQL_PASSWORD,
-    dbName: process.env.MYSQL_DATABASE
+    dbName: process.env.MYSQL_DATABASE,
   };
 };

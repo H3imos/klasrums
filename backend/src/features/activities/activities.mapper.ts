@@ -8,5 +8,5 @@ export const toActivityDto = (model: ActivityModel): ActivityResponseDto => ({
   label: model.label,
   weight: model.weight,
   limitDate: model.limitDate,
-  createdAt: model.createdAt
+  createdAt: model.createdAt,
 });

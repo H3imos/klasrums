@@ -26,6 +26,9 @@ type ClassroomRow = {
   name: string;
   room: string;
   status: "active" | "archived";
+  students_count: number;
+  periods_count: number;
+  activities_count: number;
   created_at: Date;
   updated_at: Date;
 };
@@ -34,11 +37,11 @@ class MysqlClassroomsDao implements ClassroomsDao {
   constructor(private readonly db: Connection) {}
 
   async list(): Promise<ClassroomModel[]> {
-    const [rows] = await this.db.query<ClassroomRow[]>(
-      "SELECT id, name, room, status, created_at, updated_at FROM classrooms ORDER BY created_at DESC",
+    const [rows] = await this.db.query(
+      "SELECT c.id, c.name, c.room, c.status, COALESCE(st.students_count, 0) AS students_count, COALESCE(p.periods_count, 0) AS periods_count, COALESCE(a.activities_count, 0) AS activities_count, c.created_at, c.updated_at FROM classrooms c LEFT JOIN (SELECT classroom_id, COUNT(*) AS students_count FROM classroom_students GROUP BY classroom_id) st ON st.classroom_id = c.id LEFT JOIN (SELECT classroom_id, COUNT(*) AS periods_count FROM classroom_periods GROUP BY classroom_id) p ON p.classroom_id = c.id LEFT JOIN (SELECT classroom_id, COUNT(*) AS activities_count FROM classroom_activities GROUP BY classroom_id) a ON a.classroom_id = c.id ORDER BY c.created_at DESC",
     );
 
-    return rows.map(this.toModel);
+    return (rows as ClassroomRow[]).map(this.toModel);
   }
 
   async create(payload: {
@@ -113,12 +116,12 @@ class MysqlClassroomsDao implements ClassroomsDao {
   }
 
   private async findById(id: string): Promise<ClassroomModel | null> {
-    const [rows] = await this.db.query<ClassroomRow[]>(
-      "SELECT id, name, room, status, created_at, updated_at FROM classrooms WHERE id = ? LIMIT 1",
+    const [rows] = await this.db.query(
+      "SELECT c.id, c.name, c.room, c.status, COALESCE(st.students_count, 0) AS students_count, COALESCE(p.periods_count, 0) AS periods_count, COALESCE(a.activities_count, 0) AS activities_count, c.created_at, c.updated_at FROM classrooms c LEFT JOIN (SELECT classroom_id, COUNT(*) AS students_count FROM classroom_students GROUP BY classroom_id) st ON st.classroom_id = c.id LEFT JOIN (SELECT classroom_id, COUNT(*) AS periods_count FROM classroom_periods GROUP BY classroom_id) p ON p.classroom_id = c.id LEFT JOIN (SELECT classroom_id, COUNT(*) AS activities_count FROM classroom_activities GROUP BY classroom_id) a ON a.classroom_id = c.id WHERE c.id = ? LIMIT 1",
       [id],
     );
 
-    const row = rows[0];
+    const row = (rows as ClassroomRow[])[0];
 
     return row ? this.toModel(row) : null;
   }
@@ -129,6 +132,9 @@ class MysqlClassroomsDao implements ClassroomsDao {
       name: row.name,
       room: row.room,
       status: row.status,
+      studentsCount: Number(row.students_count) || 0,
+      periodsCount: Number(row.periods_count) || 0,
+      activitiesCount: Number(row.activities_count) || 0,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };

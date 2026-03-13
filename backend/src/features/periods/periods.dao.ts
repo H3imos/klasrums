@@ -36,12 +36,12 @@ class MysqlPeriodsDao implements PeriodsDao {
   constructor(private readonly db: Connection) {}
 
   async listByClassroom(classroomId: string): Promise<PeriodModel[]> {
-    const [rows] = await this.db.query<PeriodRow[]>(
+    const [rows] = await this.db.query(
       "SELECT id, classroom_id, label, start_date, finish_date, created_at FROM classroom_periods WHERE classroom_id = ? ORDER BY start_date ASC, finish_date ASC, created_at ASC",
       [classroomId],
     );
 
-    return rows.map(this.toModel);
+    return (rows as PeriodRow[]).map(this.toModel);
   }
 
   async create(payload: {
@@ -121,12 +121,12 @@ class MysqlPeriodsDao implements PeriodsDao {
     classroomId: string,
     id: string,
   ): Promise<PeriodModel | null> {
-    const [rows] = await this.db.query<PeriodRow[]>(
+    const [rows] = await this.db.query(
       "SELECT id, classroom_id, label, start_date, finish_date, created_at FROM classroom_periods WHERE classroom_id = ? AND id = ? LIMIT 1",
       [classroomId, id],
     );
 
-    const row = rows[0];
+    const row = (rows as PeriodRow[])[0];
 
     return row ? this.toModel(row) : null;
   }
